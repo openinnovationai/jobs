@@ -1,0 +1,20 @@
+resources:
+  gpu:
+    accelerator_count: 2
+    accelerator: <accelerator type> # Example: L4 or A10G for NVIDIA, MI250 for AMD
+  memory: 8
+  cpu: 4
+dependencies:
+  - torch
+  - torchvision
+  - boto3
+secrets:
+  AWS_ACCESS_KEY_ID: <access key>
+  AWS_SECRET_ACCESS_KEY: <secret key>
+  REGION_NAME: <region name>
+  BUCKET_NAME: <bucket name>
+config_map:
+  FOLDER_NAME: <folder name>
+  EPOCHS: "5"
+  BATCH_SIZE: "256"
+  LEARNING_RATE: "0.01"
