@@ -1,0 +1,14 @@
+replicas: 2
+resources: 
+  gpu:
+    accelerator_count: 2
+    accelerator: <accelerator type> # Example: L4 or A10G etc. for NVIDIA, MI250 for AMD
+  memory: 8  
+  cpu: 2
+dependencies:
+  - pandas==2.2.0
+  - scikit-learn==1.5.0
+secrets: #optional, if present values should be str
+  HF_TOKEN: <access_token> #example
+config_map: #optional
+  FOLDER_NAME: <folder> #example
