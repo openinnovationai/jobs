@@ -6,8 +6,8 @@ runtimeEnvYAML: |
 
 replicas: 2
 resources:
-  cpu: "5"
-  memory: "12G"
+  cpu: 5
+  memory: 12
   gpu:
     accelerator: t4
     accelerator_count: 1
