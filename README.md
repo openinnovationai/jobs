@@ -7,6 +7,9 @@ This repository contains various examples for running distributed training jobs 
 The repository is organized into the following directories, each containing specific examples and configurations:
 
 ```bash
+presistent_volume/
+├── sample/
+
 Pytorch/
 ├── pytorch_ddp/
 ├── pytorch_fsdp/
@@ -15,4 +18,7 @@ ray/
 ├── fsdp/
 ├── ray_ddp/
 └── ray_mdp/
+
+tensorflow/
+├── parameter_server/
 ```

@@ -1,0 +1,9 @@
+resources:
+  gpu:
+    accelerator_count: 1
+    accelerator: mi250
+  memory: 8
+  cpu: 2
+replicas: 2
+shared_volume:
+  size: 10
