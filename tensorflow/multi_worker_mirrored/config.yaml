@@ -1,0 +1,29 @@
+replicas: 3  # Number of replicas (nodes or workers) to run the training
+resources:
+  gpu: # Optional
+    accelerator_count: 1  # Number of GPUs per replica
+    accelerator: mi210    # Target GPU device type
+  memory: 24  # Amount of memory (GB) per replica
+  cpu: 8      # Number of CPU cores per replica
+
+dependencies:
+  - pandas==2.2.0
+  - scikit-learn==1.5.0
+
+secrets: # Optional
+  HF_TOKEN: <HF_TOKEN>
+
+config_map: # Optional
+  FOLDER_NAME: <FOLDER_NAME> 
+
+shared_volume:
+  size: 100  # Shared storage volume size (GB)
+
+# Optional: Custom Docker image (commented out by default)
+# Uncomment and configure the following section if using a custom Docker image:
+# image:
+#   registry: <registry>
+#   name: <image_name>
+#   tag: <image_tag>
+#   username: <your_username>
+#   password: <your_password>
