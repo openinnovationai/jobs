@@ -10,14 +10,15 @@ dependencies:
   - pandas==2.2.0
   - scikit-learn==1.5.0
 
-secrets: # Optional
-  HF_TOKEN: <HF_TOKEN>
+# secrets: # Optional
+#   HF_TOKEN: <HF_TOKEN>
 
-config_map: # Optional
-  FOLDER_NAME: <FOLDER_NAME> 
+# config_map: # Optional
+#   FOLDER_NAME: <FOLDER_NAME> 
 
-shared_volume:
-  size: 100  # Shared storage volume size (GB)
+# Optional if you want to use shared colume between workers
+# shared_volume:
+#   size: 100  # Shared storage volume size (GB)
 
 # Optional: Custom Docker image (commented out by default)
 # Uncomment and configure the following section if using a custom Docker image:
