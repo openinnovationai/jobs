@@ -1,4 +1,4 @@
-replicas: 3  # Number of replicas (nodes or workers) to run the training
+replicas: 2  # Number of replicas (nodes or workers) to run the training
 resources:
   gpu: # Optional
     accelerator_count: 1  # Number of GPUs per replica
