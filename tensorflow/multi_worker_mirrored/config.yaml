@@ -6,10 +6,6 @@ resources:
   memory: 24  # Amount of memory (GB) per replica
   cpu: 8      # Number of CPU cores per replica
 
-dependencies:
-  - pandas==2.2.0
-  - scikit-learn==1.5.0
-
 # secrets: # Optional
 #   HF_TOKEN: <HF_TOKEN>
 
