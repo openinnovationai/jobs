@@ -1,0 +1,4 @@
+replicas: 1
+resources:
+  cpu: 1
+  memory: 8
