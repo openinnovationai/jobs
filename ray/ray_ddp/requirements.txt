@@ -1,9 +1,0 @@
-# for AMD GPUs
-# torch==2.1.2+rocm6.2 -f https://download.pytorch.org/whl/rocm6.2.html
-# torchvision==0.16.2+rocm6.2 -f https://download.pytorch.org/whl/rocm6.2.html
-# torchaudio==2.1.2+rocm6.2 -f https://download.pytorch.org/whl/rocm6.2.html
-
-# for NVIDIA GPUs
-# torch==2.1.2+cu121 -f https://download.pytorch.org/whl/torch_stable.html
-# torchvision==0.16.2+cu121 -f https://download.pytorch.org/whl/torch_stable.html
-# torchaudio==2.1.2+cu121 -f https://download.pytorch.org/whl/torch_stable.html

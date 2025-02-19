@@ -1,3 +1,9 @@
+runtimeEnvYAML: |
+    pip:
+      - pandas==2.2.0
+      - scikit-learn==1.5.0
+      - torch
+
 replicas: 1
 resources:
   cpu: 1

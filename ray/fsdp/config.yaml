@@ -1,3 +1,9 @@
+runtimeEnvYAML: |
+    pip:
+      - torch
+      - torchvision
+      - torchaudio
+
 replicas: 4
 resources:
   cpu: 5
