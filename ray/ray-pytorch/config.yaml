@@ -1,0 +1,11 @@
+runtimeEnvYAML: |
+  pip:
+    # - torch==2.6.0 --index-url https://download.pytorch.org/whl/rocm6.2.4 # OICM ROCm image uses torch==2.1.2. If you can skip this line if you don't want to upgrade torch version
+ 
+replicas: 2
+resources:
+  cpu: 5
+  memory: 12
+  gpu:
+    accelerator: mi210
+    accelerator_count: 1
