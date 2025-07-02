@@ -1,10 +1,9 @@
 resources:
   gpu:
-    accelerator_count: 8
+    accelerator_count: 1
     accelerator: MI250
   memory: 8
   cpu: 4
-  replicas: 2
 dependencies:
   - torch
   - torchvision
@@ -19,4 +18,5 @@ config_map:
   EPOCHS: "5"
   BATCH_SIZE: "256"
   LEARNING_RATE: "0.01"
-min_available: 1
+replicas: 10
+min_available: 5
