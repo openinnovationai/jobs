@@ -1,9 +1,10 @@
 resources:
   gpu:
-    accelerator_count: 2
-    accelerator: <accelerator type> # Example: L4 or A10G for NVIDIA, MI250 for AMD
+    accelerator_count: 8
+    accelerator: MI250
   memory: 8
   cpu: 4
+  replicas: 2
 dependencies:
   - torch
   - torchvision
