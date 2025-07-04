@@ -19,4 +19,4 @@ config_map:
   BATCH_SIZE: "256"
   LEARNING_RATE: "0.01"
 replicas: 10
-min_available: 5
+min_available: 4
