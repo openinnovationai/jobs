@@ -1,21 +1,14 @@
 resources:
   gpu:
-    accelerator_count: 2
-    accelerator: <accelerator type> # Example: L4 or A10G for NVIDIA, MI250 for AMD
-  memory: 8
+    accelerator_count: 8
+    accelerator: H100 # change it to the available accelerator in your cluster
+  memory: 128
   cpu: 4
-replicas: 1
-dependencies:
-  - torch
-  - torchvision
-  - boto3
-secrets:
-  AWS_ACCESS_KEY_ID: <access key>
-  AWS_SECRET_ACCESS_KEY: <secret key>
-  REGION_NAME: <region name>
-  BUCKET_NAME: <bucket name>
+replicas: 2
 config_map:
-  FOLDER_NAME: <folder name>
+  FOLDER_NAME: "test"
   EPOCHS: "5"
   BATCH_SIZE: "256"
   LEARNING_RATE: "0.01"
+shared_volume:
+  size: 20

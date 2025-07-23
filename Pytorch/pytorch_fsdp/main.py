@@ -4,7 +4,6 @@ import os
 import sys
 from datetime import datetime
 
-import boto3
 import torch
 import torch.distributed as dist
 import torch.nn as nn
@@ -13,7 +12,6 @@ import torch.utils.data as data
 import torchvision.datasets as datasets
 import torchvision.models as models
 import torchvision.transforms as transforms
-from botocore.exceptions import NoCredentialsError
 from torch.distributed.fsdp import FullyShardedDataParallel as FSDP
 from torch.distributed.fsdp.fully_sharded_data_parallel import CPUOffload
 from torch.utils.data.distributed import DistributedSampler
@@ -21,6 +19,7 @@ from torch.utils.data.distributed import DistributedSampler
 
 LOGGER = None
 
+SHARED_VOLUME_PATH = "/pvc-home"
 
 def setup_logger(id_, file=None):
     """Set up a global logger.
@@ -52,34 +51,38 @@ def setup_logger(id_, file=None):
     return LOGGER
 
 
-def upload_to_s3(file_name, bucket, object_name=None):
-    """Upload a file to an s3 bucket. This function assumes
-    that AWS credentials are set in environment variables.
+def download_dataset(download=False):
+    """Download the dataset."""
+    transform_train = transforms.Compose(
+        [
+            transforms.RandomCrop(32, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(
+                (0.4914, 0.4822, 0.4465),
+                (0.2023, 0.1994, 0.2010),
+            ),
+        ]
+    )
 
-    Args:
-        file_name (str): path to the file to be uploaded.
-        bucket (str): bucket name.
-        object_name (str, optional): path to where to store the file on
-            the bucket.
+    transform_test = transforms.Compose(
+        [
+            transforms.ToTensor(),
+            transforms.Normalize(
+                (0.4914, 0.4822, 0.4465),
+                (0.2023, 0.1994, 0.2010),
+            ),
+        ]
+    )
 
-    Returns:
-        bool: True if the upload succeeded, False otherwise.
-    """
-    if object_name is None:
-        object_name = file_name
+    trainset = datasets.CIFAR10(
+        root=SHARED_VOLUME_PATH, train=True, download=download, transform=transform_train
+    )
+    testset = datasets.CIFAR10(
+        root=SHARED_VOLUME_PATH, train=False, download=download, transform=transform_test
+    )
 
-    s3_client = boto3.client("s3")
-
-    try:
-        s3_client.upload_file(file_name, bucket, object_name)
-        return True
-    except FileNotFoundError:
-        LOGGER.debug(f"The file '{file_name}' was not found")
-        return False
-    except NoCredentialsError:
-        LOGGER.debug("AWS credentials not available")
-        return False
-
+    return trainset, testset
 
 def setup():
     """Set up process group for distributed training. This function uses
@@ -96,6 +99,7 @@ def setup():
     )
     torch.cuda.set_device(rank % torch.cuda.device_count())
     dist.barrier()
+
     return rank
 
 
@@ -185,39 +189,19 @@ def main():
     epochs = int(os.environ.get("EPOCHS", args.epochs))
     lr = float(os.environ.get("LEARNING_RATE", args.lr))
 
-    transform_train = transforms.Compose(
-        [
-            transforms.RandomCrop(32, padding=4),
-            transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
-            transforms.Normalize(
-                (0.4914, 0.4822, 0.4465),
-                (0.2023, 0.1994, 0.2010),
-            ),
-        ]
-    )
+    # Only rank 0 downloads the dataset
+    if rank == 0:
+        trainset, testset = download_dataset(download=True)
+    dist.barrier()  # All other ranks wait until download is done
+    if rank != 0:
+        # Other ranks load the dataset (now it should be present)
+        trainset, testset = download_dataset(download=False)
 
-    transform_test = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            transforms.Normalize(
-                (0.4914, 0.4822, 0.4465),
-                (0.2023, 0.1994, 0.2010),
-            ),
-        ]
-    )
-
-    trainset = datasets.CIFAR10(
-        root="./data", train=True, download=True, transform=transform_train
-    )
     train_sampler = DistributedSampler(trainset)
     train_loader = data.DataLoader(
         trainset, batch_size=batch_size, sampler=train_sampler
     )
 
-    testset = datasets.CIFAR10(
-        root="./data", train=False, download=True, transform=transform_test
-    )
     test_loader = data.DataLoader(testset, batch_size=100, shuffle=False)
 
     model = models.resnet18(num_classes=10)
@@ -238,28 +222,10 @@ def main():
         train(model, train_loader, loss_fn, optimizer, epoch)
         test(model, test_loader, loss_fn)
 
-    bucket = os.environ.get("BUCKET_NAME")
-    s3_folder = os.environ.get("FOLDER_NAME")
-    if None not in (bucket, s3_folder):
-        object_name = f"{s3_folder}/{log_file}"
-        if upload_to_s3(log_file, bucket, object_name):
-            msg = f"Log file '{log_file}' uploaded to "
-            msg += f"'{bucket}/{object_name}'"
-            LOGGER.info(msg)
-        else:
-            LOGGER.debug("Error uploading logs to S3 bucket")
+    LOGGER.info("=" * 100)
+    LOGGER.info("Training completed 🎉")
+    LOGGER.info("=" * 100)
 
-        if rank == 0:
-            model_name = f"{date}_{id_}_resnet18-chckpt-FSDP.pt"
-            torch.save(model.state_dict(), model_name)
-
-            object_name = f"{s3_folder}/{model_name}"
-            if upload_to_s3(model_name, bucket, object_name):
-                msg = f"Model checkpoint '{model_name}' successfully"
-                msg += f"uploaded to '{bucket}/{object_name}'"
-                LOGGER.info(msg)
-            else:
-                LOGGER.debug("Error uploading model checkpoint to S3 bucket")
     cleanup()
 
 
