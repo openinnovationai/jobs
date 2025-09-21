@@ -1,0 +1,11 @@
+resources:
+  gpu:
+    accelerator_count: 1
+    accelerator: H100 
+  memory: 128
+  cpu: 4
+replicas: 1
+config_map:
+  HF_TOKEN: <your hf token with write creds>
+  RESULT_MODEL_ID: <your repo id>
+  RUN_NAME: "run #1"
