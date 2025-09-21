@@ -1,0 +1,6 @@
+transformers==4.56.2
+datasets==4.1.1
+accelerate==1.10.1
+peft==0.17.1
+bitsandbytes==0.47.0
+evaluate==0.4.6

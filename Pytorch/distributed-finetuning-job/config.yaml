@@ -9,3 +9,5 @@ config_map:
   HF_TOKEN: <your hf token with write creds>
   RESULT_MODEL_ID: <your repo id>
   RUN_NAME: "run #1"
+shared_volume:
+  size: 10
